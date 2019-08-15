@@ -10,7 +10,7 @@ edition = "2018"
 gettext-rs = "0.4.2"
 serde = "^1"
 serde_derive = "^1"
-libc-strftime = "0.1"
+libc-strftime = "0.2"
 dynfmt = { version = "0.1", features = ["python"] }
 derive-error = "0.0.4"
 

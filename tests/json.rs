@@ -3,7 +3,7 @@ extern crate serde_json;
 #[macro_use]
 extern crate serde_derive;
 
-use libc_strftime::{set_locale, tzset};
+use libc_strftime::{set_locale, tz_set};
 use serde::Deserialize;
 use serde_gettext::*;
 
@@ -75,7 +75,7 @@ fn not_translated_text_with_kwargs() {
 
 #[test]
 fn datetime() {
-    tzset();
+    tz_set();
     set_locale();
 
     #[allow(clippy::unreadable_literal)]
