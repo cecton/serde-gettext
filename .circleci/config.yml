@@ -1,0 +1,49 @@
+version: 2.1
+
+jobs:
+
+  build:
+    docker:
+      - image: softprops/lambda-rust
+    environment:
+      TZ: Europe/Brussels
+      LC_TIME: en_GB.UTF-8
+    working_directory: ~/repo
+    steps:
+      - checkout:
+          path: ~/repo
+      - restore_cache:
+          keys:
+            - registry-v1-{{ .Branch }}-{{ .Revision }}
+            - registry-v1-{{ .Branch }}-
+            - registry-v1-
+      - run:
+          name: Check formatting
+          command: |
+            . ~/.profile
+            rustup component add rustfmt
+            rustfmt --check **/*.rs
+      - run:
+          name: Linting
+          command: |
+            . ~/.profile
+            rustup component add clippy
+            cargo clippy --all-targets --all-features -- -D warnings
+      - run:
+          name: Run tests
+          command: |
+            . ~/.profile
+            cargo test
+      - save_cache:
+          key: registry-v1-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - /root/.cargo/registry
+            - /root/.cargo/bin/rustfmt
+            - /root/.cargo/bin/clippy
+            - ./target
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
