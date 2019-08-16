@@ -6,6 +6,7 @@ extern crate serde_derive;
 use libc_strftime::{set_locale, tz_set};
 use serde::Deserialize;
 use serde_gettext::*;
+use std::convert::TryFrom;
 
 #[derive(Deserialize, Clone)]
 #[serde(untagged)]
@@ -16,9 +17,9 @@ enum CustomMessage {
 }
 
 impl CustomMessage {
-    fn to_string(&self) -> String {
+    fn to_string(self) -> String {
         match self {
-            CustomMessage::SerdeGetText(x) => x.to_string().unwrap(),
+            CustomMessage::SerdeGetText(x) => String::try_from(x).unwrap(),
             CustomMessage::Custom { custom } => format!("Custom: {}", custom),
             CustomMessage::CustomBool(x) => format!("Custom: {:?}", x),
         }
@@ -50,7 +51,7 @@ fn not_translated_text() {
         "text": "Hello!",
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "Hello!");
+    assert_eq!(String::try_from(message).unwrap(), "Hello!");
 }
 
 #[test]
@@ -60,7 +61,7 @@ fn not_translated_text_with_args() {
         "args": ["Grace"],
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "Hello Grace!");
+    assert_eq!(String::try_from(message).unwrap(), "Hello Grace!");
 }
 
 #[test]
@@ -70,7 +71,7 @@ fn not_translated_text_with_kwargs() {
         "args": {"name": "Grace"},
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "Hello Grace!");
+    assert_eq!(String::try_from(message).unwrap(), "Hello Grace!");
 }
 
 #[test]
@@ -85,7 +86,7 @@ fn datetime() {
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
     assert_eq!(
-        message.to_string().unwrap(),
+        String::try_from(message).unwrap(),
         "It is now: Thu 15 Aug 2019 09:36:55 CEST"
     );
 }
@@ -96,7 +97,7 @@ fn gettext() {
         "gettext": "Hello!",
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "Hello!");
+    assert_eq!(String::try_from(message).unwrap(), "Hello!");
 }
 
 #[test]
@@ -106,7 +107,7 @@ fn gettext_with_args() {
         "args": {"name": "Grace"},
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "Hello Grace!");
+    assert_eq!(String::try_from(message).unwrap(), "Hello Grace!");
 }
 
 #[test]
@@ -118,7 +119,7 @@ fn gettext_with_args_integer() {
         },
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "The answer is: 42");
+    assert_eq!(String::try_from(message).unwrap(), "The answer is: 42");
 }
 
 #[test]
@@ -131,7 +132,7 @@ fn gettext_with_args_float() {
         },
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "Pi is: 3.14");
+    assert_eq!(String::try_from(message).unwrap(), "Pi is: 3.14");
 }
 
 #[test]
@@ -143,7 +144,7 @@ fn gettext_with_args_bool() {
         },
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "The answer is: yes");
+    assert_eq!(String::try_from(message).unwrap(), "The answer is: yes");
 }
 
 #[test]
@@ -155,7 +156,7 @@ fn gettext_with_args_null() {
         },
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "The answer is: n/a");
+    assert_eq!(String::try_from(message).unwrap(), "The answer is: n/a");
 }
 
 #[test]
@@ -167,7 +168,7 @@ fn gettext_with_args_array() {
         },
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "Hello, World!");
+    assert_eq!(String::try_from(message).unwrap(), "Hello, World!");
 }
 
 #[test]
@@ -181,7 +182,7 @@ fn gettext_with_args_i18n() {
         },
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "Hello!");
+    assert_eq!(String::try_from(message).unwrap(), "Hello!");
 }
 
 #[test]
@@ -196,33 +197,73 @@ fn gettext_with_args_recursive() {
         },
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "Hello Grace!");
+    assert_eq!(String::try_from(message).unwrap(), "Hello Grace!");
 }
 
 #[test]
-fn ngettext_singular_with_args() {
+fn ngettext_singular_without_args() {
     let j = json!({
         "ngettext": {
-            "singular": "%s element",
-            "plural": "%s elements",
+            "singular": "%(n)s element",
+            "plural": "%(n)s elements",
             "n": 1,
         },
-        "args": [1],
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "1 element");
+    assert_eq!(String::try_from(message).unwrap(), "1 element");
 }
 
 #[test]
 fn ngettext_plural_with_args() {
     let j = json!({
         "ngettext": {
-            "singular": "%s element",
-            "plural": "%s elements",
+            "singular": "%(n)s element (success: %(success)s)",
+            "plural": "%(n)s elements (success: %(success)s)",
             "n": 2,
         },
-        "args": [2],
+        "args": {
+            "success": true,
+        },
     });
     let message = SerdeGetText::deserialize(&j).unwrap();
-    assert_eq!(message.to_string().unwrap(), "2 elements");
+    assert_eq!(
+        String::try_from(message).unwrap(),
+        "2 elements (success: yes)"
+    );
+}
+
+#[test]
+fn dcngettext() {
+    let j = json!({
+        "dcngettext": {
+            "domain": "some_domain",
+            "singular": "%(n)s element",
+            "plural": "%(n)s elements",
+            "n": 2,
+            "category": "measurement",
+        },
+    });
+    let message = SerdeGetText::deserialize(&j).unwrap();
+    assert_eq!(String::try_from(message).unwrap(), "2 elements");
+}
+
+#[test]
+fn base_args() {
+    let j = json!({
+        "text": "Hello %(name)s!",
+    });
+    let mut message = SerdeGetText::deserialize(&j).unwrap();
+    message.args.insert("name".to_string(), "Grace".to_string());
+    assert_eq!(String::try_from(message).unwrap(), "Hello Grace!");
+}
+
+#[test]
+fn base_args_union_order() {
+    let j = json!({
+        "text": "Hello %(name)s!",
+        "args": {"name": "Marie"},
+    });
+    let mut message = SerdeGetText::deserialize(&j).unwrap();
+    message.args.insert("name".to_string(), "Grace".to_string());
+    assert_eq!(String::try_from(message).unwrap(), "Hello Marie!");
 }

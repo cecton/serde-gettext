@@ -5,6 +5,7 @@ use libc_strftime::{set_locale, tz_set};
 #[allow(unused_imports)]
 use serde::Deserialize;
 use serde_gettext::*;
+use std::convert::TryFrom;
 
 #[derive(Deserialize, Clone)]
 #[serde(untagged)]
@@ -15,9 +16,9 @@ enum CustomMessage {
 }
 
 impl CustomMessage {
-    fn to_string(&self) -> String {
+    fn to_string(self) -> String {
         match self {
-            CustomMessage::SerdeGetText(x) => x.to_string().unwrap(),
+            CustomMessage::SerdeGetText(x) => String::try_from(x).unwrap(),
             CustomMessage::Custom { custom } => format!("Custom: {}", custom),
             CustomMessage::CustomBool(x) => format!("Custom: {:?}", x),
         }
@@ -25,9 +26,7 @@ impl CustomMessage {
 }
 
 fn to_string(s: &str) -> String {
-    serde_yaml::from_str::<SerdeGetText>(s)
-        .expect("could not parse yaml")
-        .to_string()
+    String::try_from(serde_yaml::from_str::<SerdeGetText>(s).expect("could not parse yaml"))
         .expect("could not translate")
 }
 
@@ -251,11 +250,9 @@ fn ngettext_singular_with_args() {
         to_string(
             r#"---
 ngettext:
-    singular: "%s element"
-    plural: "%s elements"
+    singular: "%(n)s element"
+    plural: "%(n)s elements"
     n: 1
-args:
-    - 1
 "#
         ),
         "1 element"
@@ -268,13 +265,24 @@ fn ngettext_plural_with_args() {
         to_string(
             r#"---
 ngettext:
-    singular: "%s element"
-    plural: "%s elements"
+    singular: "%(n)s element"
+    plural: "%(n)s elements"
     n: 2
-args:
-    - 2
 "#,
         ),
         "2 elements"
+    );
+}
+
+#[test]
+fn base_args() {
+    let s = r#"---
+text: "Hello %(name)s!"
+"#;
+    let mut message = serde_yaml::from_str::<SerdeGetText>(s).expect("could not parse yaml");
+    message.args.insert("name".to_string(), "Grace".to_string());
+    assert_eq!(
+        String::try_from(message).expect("could not translate"),
+        "Hello Grace!"
     );
 }

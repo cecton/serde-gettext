@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gettext-rs = "0.4.2"
+gettext-rs = "0.4.3"
 serde = "^1"
 serde_derive = "^1"
 libc-strftime = "0.2"
