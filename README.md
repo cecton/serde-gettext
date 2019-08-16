@@ -114,7 +114,7 @@ args:
         -           # "n/a" (translated)
 ```
 
-Outputs: "yes, 3.14, n/a"
+Output: "yes, 3.14, n/a"
 
 `args` is recursive and can handle gettext functions:
 
@@ -130,7 +130,7 @@ args:
             success: true
 ```
 
-Outputs: "Last operation status: 1 element deleted (success: yes)"
+Output: "Last operation status: 1 element deleted (success: yes)"
 
 List of All Available Functions
 ===============================
