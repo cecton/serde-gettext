@@ -69,6 +69,62 @@
 //!         name: Grace
 //!     ```
 //!
+//! `args` can handle many different formats and use positional arguments or
+//! keyword arguments:
+//!
+//! ```yaml
+//! gettext: "%s %s %s"
+//! args:
+//!     - true      # "yes" (translated)
+//!     - 3.14      # "3.14"
+//!     -           # "n/a" (translated)
+//! ```
+//!
+//! Output: "yes 3.14 n/a"
+//!
+//! `args` can be added to any function:
+//!
+//! ```yaml
+//! ngettext:
+//!     singular: "%(n)s element deleted (success: %(success)s)"
+//!     plural: "%(n)s elements deleted (success: %(success)s)"
+//!     n: 1
+//! args:
+//!     success: true
+//! ```
+//!
+//! Output: "1 element deleted (success: yes)"
+//!
+//! `args` can handle arrays by joining the items:
+//!
+//! ```yaml
+//! gettext: "%(value)s"
+//! args:
+//!     value:
+//!         - ", "      # The separator
+//!         - true      # "yes" (translated)
+//!         - 3.14      # "3.14"
+//!         -           # "n/a" (translated)
+//! ```
+//!
+//! Outputs: "yes, 3.14, n/a"
+//!
+//! `args` is recursive and can handle gettext functions:
+//!
+//! ```yaml
+//! gettext: "Last operation status: %(status)s"
+//! args:
+//!     status:
+//!         ngettext:
+//!             singular: "%(n)s element deleted (success: %(success)s)"
+//!             plural: "%(n)s elements deleted (success: %(success)s)"
+//!             n: 1
+//!         args:
+//!             success: true
+//! ```
+//!
+//! Outputs: "Last operation status: 1 element deleted (success: yes)"
+//!
 //! List of All Available Functions
 //! ===============================
 //!
