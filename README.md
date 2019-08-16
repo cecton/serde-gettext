@@ -22,7 +22,7 @@ to translate the input.
         "ngettext": {
             "singular": "One item has been deleted",
             "plural": "%(n)s items have been deleted",
-            "n": 5,
+            "n": 5
         }
     }
     ```
