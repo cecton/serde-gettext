@@ -196,3 +196,23 @@ List of All Available Functions
         n: 5
         cateogy: "ctype|numeric|time|collate|monetary|messages|all|paper|name|address|telephone|measurement|identification"
     ```
+
+Date and Time Formatting
+========================
+
+You can format date and time in the locale of your choice using strftime:
+
+```yaml
+strftime: "It is now: %c"
+epoch: 1565854615
+```
+
+Output: "It is now: Thu 15 Aug 2019 09:36:55 CEST"
+
+You will need to call `set_locale` and `tz_set` from
+[libc-strftime](https://docs.rs/libc-strftime/0.2.0/libc_strftime/) to activate
+the locale and the timezone for your current region.
+
+If you want to change the locale and timezone for the current process, you
+will need to export `TZ` and `LC_ALL` as environment variable first, then call
+`set_locale` and `tz_set` again.
