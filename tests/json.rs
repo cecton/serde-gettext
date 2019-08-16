@@ -13,11 +13,11 @@ use std::convert::TryFrom;
 enum CustomMessage {
     CustomBool(bool),
     Custom { custom: String },
-    SerdeGetText(SerdeGetText),
+    SerdeGetText(Box<SerdeGetText>),
 }
 
 impl CustomMessage {
-    fn to_string(self) -> String {
+    fn into_string(self) -> String {
         match self {
             CustomMessage::SerdeGetText(x) => String::try_from(x).unwrap(),
             CustomMessage::Custom { custom } => format!("Custom: {}", custom),
@@ -32,17 +32,17 @@ fn custom_message() {
         "text": "Hello!",
     });
     let message = CustomMessage::deserialize(&j).unwrap();
-    assert_eq!(message.to_string(), "Hello!");
+    assert_eq!(message.into_string(), "Hello!");
 
     let j = json!({
         "custom": "Hello!",
     });
     let message = CustomMessage::deserialize(&j).unwrap();
-    assert_eq!(message.to_string(), "Custom: Hello!");
+    assert_eq!(message.into_string(), "Custom: Hello!");
 
     let j = json!(true);
     let message = CustomMessage::deserialize(&j).unwrap();
-    assert_eq!(message.to_string(), "Custom: true");
+    assert_eq!(message.into_string(), "Custom: true");
 }
 
 #[test]

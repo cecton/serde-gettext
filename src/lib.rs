@@ -37,6 +37,14 @@ impl TryFrom<SerdeGetText> for String {
     }
 }
 
+impl TryFrom<Box<SerdeGetText>> for String {
+    type Error = Error;
+
+    fn try_from(x: Box<SerdeGetText>) -> Result<String, Error> {
+        String::try_from(*x)
+    }
+}
+
 #[derive(Deserialize, Clone, Debug)]
 #[serde(untagged)]
 enum Value {
