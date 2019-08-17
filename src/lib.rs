@@ -203,7 +203,7 @@
 //! Output: "It is now: Thu 15 Aug 2019 09:36:55 CEST"
 //!
 //! You will need to call `set_locale` and `tz_set` from
-//! [libc-strftime](https://docs.rs/libc-strftime/0.2.0/libc_strftime/) to
+//! [libc-strftime](https://docs.rs/libc-strftime/) to
 //! activate the locale and the timezone for your current region.
 //!
 //! If you want to change the locale and timezone for the current process, you
