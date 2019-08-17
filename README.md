@@ -63,7 +63,7 @@ Formatting
     {
         "gettext": "Hello %(name)s!",
         "args": {
-            "name": "Grace",
+            "name": "Grace"
         }
     }
     ```
