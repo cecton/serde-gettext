@@ -535,36 +535,52 @@ struct ValueDCNGetText {
 #[allow(clippy::enum_variant_names)]
 enum LocaleCategory {
     #[serde(rename = "ctype")]
-    LcCType = 0,
+    LcCType,
     #[serde(rename = "numeric")]
-    LcNumeric = 1,
+    LcNumeric,
     #[serde(rename = "time")]
-    LcTime = 2,
+    LcTime,
     #[serde(rename = "collate")]
-    LcCollate = 3,
+    LcCollate,
     #[serde(rename = "monetary")]
-    LcMonetary = 4,
+    LcMonetary,
     #[serde(rename = "messages")]
-    LcMessages = 5,
+    LcMessages,
     #[serde(rename = "all")]
-    LcAll = 6,
+    LcAll,
     #[serde(rename = "paper")]
-    LcPaper = 7,
+    LcPaper,
     #[serde(rename = "name")]
-    LcName = 8,
+    LcName,
     #[serde(rename = "address")]
-    LcAddress = 9,
+    LcAddress,
     #[serde(rename = "telephone")]
-    LcTelephone = 10,
+    LcTelephone,
     #[serde(rename = "measurement")]
-    LcMeasurement = 11,
+    LcMeasurement,
     #[serde(rename = "identification")]
-    LcIdentification = 12,
+    LcIdentification,
 }
 
 impl std::convert::From<LocaleCategory> for gettextrs::LocaleCategory {
     fn from(category: LocaleCategory) -> Self {
-        unsafe { std::mem::transmute(category) }
+        use gettextrs::LocaleCategory::*;
+
+        match category {
+            LocaleCategory::LcCType => LcCType,
+            LocaleCategory::LcNumeric => LcNumeric,
+            LocaleCategory::LcTime => LcTime,
+            LocaleCategory::LcCollate => LcCollate,
+            LocaleCategory::LcMonetary => LcMonetary,
+            LocaleCategory::LcMessages => LcMessages,
+            LocaleCategory::LcAll => LcAll,
+            LocaleCategory::LcPaper => LcPaper,
+            LocaleCategory::LcName => LcName,
+            LocaleCategory::LcAddress => LcAddress,
+            LocaleCategory::LcTelephone => LcTelephone,
+            LocaleCategory::LcMeasurement => LcMeasurement,
+            LocaleCategory::LcIdentification => LcIdentification,
+        }
     }
 }
 
